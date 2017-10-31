@@ -7,7 +7,7 @@
   },
   "keywords": [],
   "author": "Federico Gandellini <fgandellini@gmail.com> (https://github.com/fgandellini)",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/chai": "4.0.4",
     "@types/mocha": "2.2.44",
