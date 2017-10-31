@@ -15,7 +15,7 @@ interface Order {
   items: Array<Item>,
 }
 
-const loadOrder = (orderId: number) : Promise<Order> => { 
+const loadOrder = (orderId: number) : Promise<Order> => {
   return new Promise((res, rej) => {
     setTimeout(() => (orderId !== 4)
       ? res({
@@ -99,12 +99,13 @@ describe('createOrder', () => {
       )
   )
 
-  it('should fail to load order 4' , () =>
-    createOrder({ orderId: 3 })
-      .catch(o =>
-        expect(o).to.deep.equals('order not found!')
-      )
-  )
+  it('should fail to load order 4' , done => {
+    createOrder({ orderId: 4 })
+      .catch(err => {
+        expect(err).to.equals('order not found!')
+        done()
+      })
+  })
 
 })
 
