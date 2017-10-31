@@ -47,15 +47,15 @@ function createOrder(payload) : Promise<any> {
     if (isValid(order)) {
       const transactionId = processPayment(order).then(trId => {
         const confirmedOrder = confirmOrder(trId, order)        
-        return {status: 'ok', confirmedOrder: confirmedOrder }
-      }).catch(err => {
-        return {status: 'error', message: 'payment failed'}
-      })
-      return transactionId
-    } else {
-      return {status: 'error', message: 'order is not valid'}
-    } 
-  })
+          return { status: 'ok', confirmedOrder: confirmedOrder }
+        }).catch(err => {
+          return Promise.reject({ status: 'error', message: 'payment failed' })
+        })
+        return transactionId
+      } else {
+        return Promise.reject({ status: 'error', message: 'order is not valid' })
+      } 
+    })
 }
 
 // tests ////////////////////////////////////////////////////////////
@@ -79,25 +79,27 @@ describe('createOrder', () => {
       )
   )
 
-  it('should fail payment on order 2' , () =>
+  it('should fail payment on order 2' , done => {
     createOrder({ orderId: 2 })
-      .then(o => 
-        expect(o).to.deep.equals({
+      .catch(err => {
+        expect(err).to.deep.equals({
           status: 'error',
           message: 'payment failed'
         })
-      )
-  )
+        done()
+      })
+  })
 
-  it('should fail order validation on order 3' , () =>
+  it('should fail order validation on order 3' , done => {
     createOrder({ orderId: 3 })
-      .then(o => 
-        expect(o).to.deep.equals({
+      .catch(err => {
+        expect(err).to.deep.equals({
           status: 'error',
           message: 'order is not valid'
         })
-      )
-  )
+        done()
+      })
+  })
 
   it('should fail to load order 4' , done => {
     createOrder({ orderId: 4 })
