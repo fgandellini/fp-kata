@@ -1,0 +1,19 @@
+{
+  "name": "fp-kata",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "test": "mocha --reporter spec --require ts-node/register '*.ts'"
+  },
+  "keywords": [],
+  "author": "Federico Gandellini <fgandellini@gmail.com> (https://github.com/fgandellini)",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai": "4.0.4",
+    "@types/mocha": "2.2.44",
+    "chai": "4.1.2",
+    "mocha": "4.0.1",
+    "ts-node": "3.3.0",
+    "typescript": "2.6.1"
+  }
+}
