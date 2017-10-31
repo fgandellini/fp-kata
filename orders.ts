@@ -16,14 +16,17 @@ interface Order {
 }
 
 const loadOrder = (orderId: number) : Promise<Order> => { 
-  return new Promise(res => {
-    setTimeout(() => res({
-      id: orderId,
-      items: [
-        { id: 1, qty: 4, unitPrice: 10 },
-        { id: 4, qty: 2, unitPrice:  7 },
-      ],
-    }), 0)
+  return new Promise((res, rej) => {
+    setTimeout(() => (orderId !== 4)
+      ? res({
+          id: orderId,
+          items: [
+            { id: 1, qty: 4, unitPrice: 10 },
+            { id: 4, qty: 2, unitPrice:  7 },
+          ],
+        })
+      : rej('order not found!')
+    , 0)
   })  
 }
 
@@ -93,6 +96,13 @@ describe('createOrder', () => {
           status: 'error',
           message: 'order is not valid'
         })
+      )
+  )
+
+  it('should fail to load order 4' , () =>
+    createOrder({ orderId: 3 })
+      .catch(o =>
+        expect(o).to.deep.equals('order not found!')
       )
   )
 
