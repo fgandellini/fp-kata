@@ -15,6 +15,16 @@ interface Order {
   items: Array<Item>,
 }
 
+interface ConfirmedOrder extends Order {
+  transactionId: number
+}
+
+interface OrderCreationSuccess { status: 'ok', confirmedOrder: ConfirmedOrder }
+interface OrderCreationError { status: 'error', message: string }
+type OrderCreationResult = OrderCreationSuccess | OrderCreationError
+
+type PaymentResult = number
+
 const loadOrder = (orderId: number) : Promise<Order> => {
   return new Promise((res, rej) => {
     setTimeout(() => (orderId !== 4)
@@ -32,30 +42,30 @@ const loadOrder = (orderId: number) : Promise<Order> => {
 
 const isValid = (order: Order) : boolean => (order.id !== 3)
 
-const processPayment = (order: Order) : Promise<number> =>  {
+const processPayment = (order: Order) : Promise<PaymentResult> =>  {
   return new Promise((res, rej) => {
     setTimeout(() => (order.id !== 2) ? res(123) : rej('no credit'), 0)
   })
 }
 
-const confirmOrder = (trId: number, order: Order) : Order => {
+const confirmOrder = (trId: number, order: Order) : ConfirmedOrder => {
   return (Object as any).assign({}, order, { transactionId: trId })
 }
 
-function createOrder(payload) : Promise<any> {
+function createOrder(payload) : Promise<OrderCreationResult> {
   return loadOrder(payload.orderId).then(order => {
     if (isValid(order)) {
       const transactionId = processPayment(order).then(trId => {
         const confirmedOrder = confirmOrder(trId, order)        
-          return { status: 'ok', confirmedOrder: confirmedOrder }
-        }).catch(err => {
-          return Promise.reject({ status: 'error', message: 'payment failed' })
-        })
-        return transactionId
-      } else {
-        return Promise.reject({ status: 'error', message: 'order is not valid' })
-      } 
-    })
+        return ({ status: 'ok', confirmedOrder: confirmedOrder }) as OrderCreationSuccess // <- TypeScript seems not understand this without the cast 
+      }).catch(err => {
+        return Promise.reject({ status: 'error', message: 'payment failed' })
+      })
+      return transactionId
+    } else {
+      return Promise.reject({ status: 'error', message: 'order is not valid' })
+    }
+  })
 }
 
 // tests ////////////////////////////////////////////////////////////
